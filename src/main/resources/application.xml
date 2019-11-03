@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.wez.svc" />
+
+
+    <!--
+        spring aop使用方式：1注解配置 2xml配置
+        注意：两种方式只能选择其中一种，混合使用可能会导致冲突。
+    -->
+    <!-- 方式一：注解配置 -->
+    <!-- 扫描切切面类 -->
+    <!--<context:component-scan base-package="com.wez.springaop" />-->
+    <!-- 启用aspectj注解 -->
+    <!--<aop:aspectj-autoproxy />-->
+
+    <!-- 方式二：xml配置 -->
+    <aop:config>
+        <!-- 定义切面 -->
+        <!--<aop:aspect id="logAspectJ" ref="logAspectJ">
+            <aop:before method="before" pointcut="execution(* com.wez.svc.*.*(..))" />
+            <aop:after-returning method="afterReturning" pointcut="execution(* com.wez.svc.*.*(..))" returning="obj" />
+            <aop:after-throwing method="afterThrowing" pointcut="execution(* com.wez.svc.*.*(..))" throwing="e" />
+            <aop:after method="after" pointcut="execution(* com.wez.svc.*.*(..))" />
+            <aop:around method="around" pointcut="execution(* com.wez.svc.*.*(..))" />
+        </aop:aspect>-->
+
+        <!-- 定义公共切入点。注意：公共切入点要定义在<aop:aspect>之前，否则抛异常。 -->
+        <aop:pointcut id="logPointcut" expression="execution(* com.wez.svc.*.*(..))"/>
+
+        <!-- 定义切面，引用公共切入点 -->
+        <aop:aspect id="logAspectJ" ref="logAspectJ">
+            <aop:before method="before" pointcut-ref="logPointcut" />
+            <aop:after-returning method="afterReturning" pointcut-ref="logPointcut" returning="obj" />
+            <aop:after-throwing method="afterThrowing" pointcut-ref="logPointcut" throwing="e" />
+            <aop:after method="after" pointcut-ref="logPointcut" />
+            <aop:around method="around" pointcut-ref="logPointcut" />
+        </aop:aspect>
+    </aop:config>
+
+    <!-- 注入切面类 -->
+    <bean id="logAspectJ" class="com.wez.springaop.LogAspectJXML" />
+
+</beans>
